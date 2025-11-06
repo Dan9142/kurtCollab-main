@@ -17,28 +17,6 @@ public class Kurt {
 
         Map<String, User> users = parser.map();
         if (hadError) return;
-
-        for (User user : users.values())
-            System.out.println(user);
-
-        System.out.print("Enter a username: ");
-        String username = input.nextLine();
-
-        if (!users.containsKey(username)) {
-            System.out.println("Username not found :(");
-            return;
-        }
-
-        User user = users.get(username);
-        System.out.print("Enter password: ");
-        String password = input.nextLine();
-
-        if (!user.getPassword().equals(password)) {
-            System.out.println("Wrong password :(");
-            return;
-        }
-
-        System.out.println("Success :)");
     }
 
     public static byte[] readFile(String path) throws IOException {
