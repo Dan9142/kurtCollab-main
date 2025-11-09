@@ -1,14 +1,15 @@
 package kurt.test;
 
 import static kurt.test.ExitCode.*;
+import static kurt.test.FieldType.*;
 
 class Creator implements Field.Visitor<ExitCode> {
     private final User user;
-    private final Processor proc;
+    private final Validator validator;
 
     Creator(User user) {
         this.user = user;
-        proc = new Processor();
+        validator = new Validator();
     }
 
     public ExitCode add(Field field) {
@@ -18,41 +19,41 @@ class Creator implements Field.Visitor<ExitCode> {
 
     @Override
     public ExitCode visit(Field.Name field) {
-        if (!proc.validate(field)) return EXIT_REQUIRED_FIELD;
-        user.setUsername(field.value);
+        if (!validator.validate(field)) return EXIT_REQUIRED_FIELD;
+        user.put(USERNAME, field);
         return EXIT_SUCCESS;
     }
 
     @Override
     public ExitCode visit(Field.Password field) {
-        if (!proc.validate(field)) return EXIT_REQUIRED_FIELD;
-        user.setPassword(field.value);
+        if (!validator.validate(field)) return EXIT_REQUIRED_FIELD;
+        user.put(PWD, field);
         return EXIT_SUCCESS;
     }
 
     @Override
     public ExitCode visit(Field.DOB field) {
-        if (!proc.validate(field)) return EXIT_PROCESSOR_FAILURE;
-        user.setDob(field.value);
+        if (!validator.validate(field)) return EXIT_PROCESSOR_FAILURE;
+        user.put(DOB, field);
         return EXIT_SUCCESS;
     }
 
     @Override
     public ExitCode visit(Field.Email field) {
-        if (!proc.validate(field)) return EXIT_PROCESSOR_FAILURE;
-        user.setEmail(field.value);
+        if (!validator.validate(field)) return EXIT_PROCESSOR_FAILURE;
+        user.put(EMAIL, field);
         return EXIT_SUCCESS;
     }
 
     public ExitCode visit(Field.Reputation field) {
-        if (!proc.validate(field)) return EXIT_PROCESSOR_FAILURE;
-        user.setReputation(field.value);
+        if (!validator.validate(field)) return EXIT_PROCESSOR_FAILURE;
+        user.put(REP, field);
         return EXIT_SUCCESS;
     }
 
     public ExitCode visit(Field.Posts field) {
-        if (!proc.validate(field)) return EXIT_PROCESSOR_FAILURE;
-        user.setPosts(field.value);
+        if (!validator.validate(field)) return EXIT_PROCESSOR_FAILURE;
+        user.put(POSTS, field);
         return EXIT_SUCCESS;
     }
 

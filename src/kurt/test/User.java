@@ -1,65 +1,49 @@
 package kurt.test;
 
-public class User {
-    private String username;
-    private String password;
-    private String dob;
-    private String email;
-    private double reputation;
-    private int posts;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-    @Override
-    // TODO: Delete this later.
-    public String toString() {
-        return String.format("[ Username: %s, Password: %s, Date of Birth: %s, Email: %s, Reputation: %.2f, Posts: %d ]",
-                this.username, this.password, this.dob, this.email, this.reputation, this.posts);
+class User {
+    List<Field> fields = new ArrayList<>(2);
+    private final Map<FieldType, Field> fieldMap = new HashMap<>(2);
+
+    public void add(Field field) {
+        fields.add(field);
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setDob(String dob) {
-        this.dob = dob;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setReputation(double reputation) {
-        this.reputation = reputation;
-    }
-
-    public void setPosts(int posts) {
-        this.posts = posts;
+    public void put(FieldType id, Field field) {
+        fieldMap.put(id, field);
     }
 
     public String getUsername() {
-        return username;
+        Field.Name name = (Field.Name)fieldMap.get(FieldType.USERNAME);
+        return name.value;
     }
 
     public String getPassword() {
-        return password;
+        Field.Password pass = (Field.Password)fieldMap.get(FieldType.PWD);
+        return pass.value;
     }
 
     public String getDob() {
-        return dob;
+        Field.DOB date = (Field.DOB)fieldMap.get(FieldType.DOB);
+        return date.value;
     }
 
     public String getEmail() {
-        return email;
+        Field.Email email = (Field.Email)fieldMap.get(FieldType.EMAIL);
+        return email.value;
     }
 
     public double getReputation() {
-        return reputation;
+        Field.Reputation rep = (Field.Reputation)fieldMap.get(FieldType.REP);
+        return rep.value;
     }
 
     public int getPosts() {
-        return posts;
+        Field.Posts posts = (Field.Posts)fieldMap.get(FieldType.POSTS);
+        return posts.value;
     }
 }

@@ -1,12 +1,60 @@
 package kurt.test;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
+
+import static kurt.test.NumberType.*;
 
 class Serializer implements Field.Visitor<byte[]> {
-    private final static Processor processor = new Processor();
+    private final static Validator VALIDATOR = new Validator();
+    private final static byte CONT_MARKER = (byte)0xFF;
+    private final static byte TERMINATE = (byte)0xE0;
+    private List<Field> fields;
 
-    public byte[] serialize(Field field) {
-        if (!processor.validate(field)) return new byte[0];
+    public Serializer(List<Field> fields) {
+        this.fields = fields;
+    }
+
+    /**
+     * Completely rewrites file with new values.
+     *
+     * @param file The file you wish to write to.
+     * @param numOfUsers The number of users you wish to
+     * rewrite into this file.
+     */
+    public void write(String file, int numOfUsers) throws IOException {
+        Path path = Paths.get(file);
+
+        Files.write(path, initHeader(numOfUsers));
+        List<byte[]> bytes = fieldsToBytes();
+        for (byte[] bite : bytes)
+            Files.write(path, bite, StandardOpenOption.APPEND);
+    }
+
+    public List<byte[]> fieldsToBytes() {
+        List<byte[]> bytes = new ArrayList<>();
+        bytes.add(new byte[]{CONT_MARKER});
+        for (Field field : fields)
+            bytes.add(fieldToBytes(field));
+        bytes.add(new byte[]{TERMINATE});
+        return bytes;
+    }
+
+    public byte[] initHeader(int numOfUsers) {
+        int len = "VFF02".length();
+        byte[] header = new byte[len + 4];
+        System.arraycopy("VFF02".getBytes(StandardCharsets.UTF_8), 0, header, 0, len);
+        return intToBytes(header, 5, numOfUsers);
+    }
+
+    public byte[] fieldToBytes(Field field) {
+        if (!VALIDATOR.validate(field)) return new byte[0];
         return field.accept(this);
     }
 
@@ -32,19 +80,36 @@ class Serializer implements Field.Visitor<byte[]> {
 
     @Override
     public byte[] visit(Field.Reputation field) {
-        return new byte[0];
+        int value = Float.floatToIntBits(field.value);
+        byte[] bytes = new byte[FLOAT.sizeOf() + 1];
+        bytes[0] = (byte)0xC0;
+        return intToBytes(bytes, 1, value);
     }
 
     @Override
     public byte[] visit(Field.Posts field) {
-        return new byte[0];
+        byte[] bytes = new byte[INT.sizeOf() + 1];
+        bytes[0] = (byte)0xD0;
+        return intToBytes(bytes, 1, field.value);
+    }
+
+    private byte[] intToBytes(byte[] bytes, int start, int value) {
+        int shift = 32;
+        while (start < bytes.length) {
+            shift -= 8;
+            bytes[start] = (byte)(value >>> shift);
+            start++;
+        }
+
+        return bytes;
     }
 
     private byte[] createStringBytes(byte id, String string) {
-        byte[] src = string.getBytes(StandardCharsets.UTF_8);
-        byte[] value = new byte[string.length() + 1];
+        int len = string.length();
+        byte[] value = new byte[len + 2];
         value[0] = id;
-        System.arraycopy(src, 0, value, 1, src.length);
+        value[1] = (byte)len;
+        System.arraycopy(string.getBytes(StandardCharsets.UTF_8), 0, value, 2, len);
         return value;
     }
 }

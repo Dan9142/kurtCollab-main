@@ -1,5 +1,6 @@
 package kurt.test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +8,7 @@ import static kurt.test.FieldType.*;
 import static kurt.test.NumberType.*;
 import static kurt.test.ExitCode.*;
 
-public class Parser extends ByteScanner {
+class Parser extends ByteScanner {
     public Map<String, User> maps;
     private static final Map<Byte, FieldType> IDS;
     private static final byte CONT_MARKER = (byte)0xFF;
@@ -39,6 +40,7 @@ public class Parser extends ByteScanner {
     private Map<String, User> mapUsers() {
         verifyHeader();
         int numOfUsers = asInt(INT); // Retrieve int and advance.
+        if (numOfUsers == 0) return Collections.emptyMap();
 
         while (!isEnd()) {
             if (!match(CONT_MARKER))
@@ -69,7 +71,10 @@ public class Parser extends ByteScanner {
             type = getID();
         }
 
-        maps.put(creator.getUser().getUsername(), creator.getUser());
+        User user = creator.getUser();
+        if (user.getUsername() == null || user.getPassword() == null)
+            throw error(EXIT_REQUIRED_FIELD);
+        maps.put(user.getUsername(), user);
     }
 
     private Field createField(FieldType type) {

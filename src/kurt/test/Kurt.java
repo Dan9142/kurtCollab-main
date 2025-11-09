@@ -5,8 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static kurt.test.FieldType.*;
+
 public class Kurt {
-    static final String PATH = "kurtCollab/src/kurt/test/scaleTest.vff";
+    static final String PATH = "kurtCollab/src/kurt/test/sample.vff";
     static final String WRITE = "kurtCollab/src/kurt/test/writeTest.vff";
 
     static boolean hadError = false;
@@ -17,6 +19,25 @@ public class Kurt {
 
         Map<String, User> users = parser.map();
         if (hadError) return;
+
+        System.out.print("Enter username: ");
+        String name = input.nextLine();
+
+        User user = users.get(name);
+        if (user == null) {
+            System.out.println("User does not exist");
+            return;
+        }
+
+        System.out.print("Enter password: ");
+        String pass = input.nextLine();
+
+        if (!pass.equals(user.getPassword())) {
+            System.out.println("Incorrect password.");
+            return;
+        }
+
+        System.out.println("You're in.");
     }
 
     public static byte[] readFile(String path) throws IOException {

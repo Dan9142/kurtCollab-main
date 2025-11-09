@@ -1,5 +1,7 @@
 package kurt.test;
 
+import java.util.Objects;
+
 abstract class Field {
     interface Visitor<V> {
         V visit(Name field);
@@ -16,6 +18,13 @@ abstract class Field {
         @Override
         <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Name)) return false;
+            return Objects.equals(this.value, ((Name)obj).value);
+        }
+
         final String value;
     }
 
@@ -24,6 +33,13 @@ abstract class Field {
 
         @Override
         <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Password)) return false;
+            return Objects.equals(this.value, ((Password)obj).value);
+        }
 
         final String value;
     }
@@ -34,6 +50,13 @@ abstract class Field {
         @Override
         <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof DOB)) return false;
+            return Objects.equals(this.value, ((DOB)obj).value);
+        }
+
         final String value;
     }
 
@@ -43,16 +66,30 @@ abstract class Field {
         @Override
         <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Email)) return false;
+            return Objects.equals(this.value, ((Email)obj).value);
+        }
+
         final String value;
     }
 
     static class Reputation extends Field {
-        Reputation(double value) { this.value = value; }
+        Reputation(float value) { this.value = value; }
 
         @Override
         <V> V accept (Visitor<V> visitor) { return visitor.visit(this); }
 
-        final double value;
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Reputation)) return false;
+            return this.value == ((Reputation)obj).value;
+        }
+
+        final float value;
     }
 
     static class Posts extends Field {
@@ -60,6 +97,13 @@ abstract class Field {
 
         @Override
         <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Posts)) return false;
+            return this.value == ((Posts)obj).value;
+        }
 
         final int value;
     }

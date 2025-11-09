@@ -1,44 +1,37 @@
 package kurt.test;
 
-class Processor implements Field.Visitor<Boolean> {
-    public boolean validate(Field field) {
+class Processor implements Field.Visitor<Object> {
+    public Object process(Field field) {
         return field.accept(this);
     }
 
     @Override
-    public Boolean visit(Field.Name field) {
-        return field.value != null &&
-                !field.value.isEmpty();
+    public Object visit(Field.Name field) {
+        return field.value;
     }
 
     @Override
-    public Boolean visit(Field.Password field) {
-        return field.value != null &&
-                !field.value.isEmpty();
+    public Object visit(Field.Password field) {
+        return field.value;
     }
 
     @Override
-    public Boolean visit(Field.DOB field) {
-        String dob = field.value;
-        String regex = "[0-9]{2}/[0-9]{2}/[0-9]{4}";
-        return dob != null && dob.length() == 10
-                && dob.matches(regex);
+    public Object visit(Field.DOB field) {
+        return field.value;
     }
 
     @Override
-    public Boolean visit(Field.Email field) {
-        String email = field.value;
-        String emailRegex = "^[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" +
-                "[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-        return email != null && email.matches(emailRegex);
+    public Object visit(Field.Email field) {
+        return field.value;
     }
 
-    public Boolean visit(Field.Reputation field) {
-        double rep = field.value;
-        return rep >= 0 && rep <= 5;
+    @Override
+    public Object visit(Field.Reputation field) {
+        return field.value;
     }
 
-    public Boolean visit(Field.Posts field) {
-        return field.value >= 0;
+    @Override
+    public Object visit(Field.Posts field) {
+        return field.value;
     }
 }
