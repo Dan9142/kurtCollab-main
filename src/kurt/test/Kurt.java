@@ -8,8 +8,8 @@ import java.util.*;
 import static kurt.test.FieldType.*;
 
 public class Kurt {
-    static final String PATH = "kurtCollab/src/kurt/test/sample.vff";
-    static final String WRITE = "kurtCollab/src/kurt/test/writeTest.vff";
+    static final String PATH = "src/kurt/test/sample.vff";
+    static final String WRITE = "src/kurt/test/writeTest.vff";
 
     static boolean hadError = false;
 
@@ -19,6 +19,13 @@ public class Kurt {
 
         Map<String, User> users = parser.map();
         if (hadError) return;
+
+        for (User user : users.values())
+        {
+            System.out.print(user.getUsername() + " ");
+            System.out.println(user.getPassword());
+        }
+
 
         System.out.print("Enter username: ");
         String name = input.nextLine();

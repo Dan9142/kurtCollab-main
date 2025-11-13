@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class User {
+public class User {
     List<Field> fields = new ArrayList<>(2);
     private final Map<FieldType, Field> fieldMap = new HashMap<>(2);
 

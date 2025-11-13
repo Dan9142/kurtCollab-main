@@ -8,7 +8,7 @@ import static kurt.test.FieldType.*;
 import static kurt.test.NumberType.*;
 import static kurt.test.ExitCode.*;
 
-class Parser extends ByteScanner {
+public class Parser extends ByteScanner {
     public Map<String, User> maps;
     private static final Map<Byte, FieldType> IDS;
     private static final byte CONT_MARKER = (byte)0xFF;
