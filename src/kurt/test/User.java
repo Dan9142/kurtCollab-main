@@ -3,7 +3,7 @@ package kurt.test;
 import java.util.HashMap;
 import java.util.Map;
 
-class User {
+public class User {
     private final Map<FieldType, Field> fieldMap = new HashMap<>(2);
 
     public void put(FieldType id, Field field) {
