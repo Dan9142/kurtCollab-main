@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static kurt.test.NumberType.*;
 
@@ -15,9 +16,9 @@ class Serializer implements Field.Visitor<byte[]> {
     private final static Validator VALIDATOR = new Validator();
     private final static byte CONT_MARKER = (byte)0xFF;
     private final static byte TERMINATE = (byte)0xE0;
-    private List<Field> fields;
+    private final Map<FieldType, Field> fields;
 
-    public Serializer(List<Field> fields) {
+    public Serializer(Map<FieldType, Field> fields) {
         this.fields = fields;
     }
 
@@ -40,7 +41,7 @@ class Serializer implements Field.Visitor<byte[]> {
     public List<byte[]> fieldsToBytes() {
         List<byte[]> bytes = new ArrayList<>();
         bytes.add(new byte[]{CONT_MARKER});
-        for (Field field : fields)
+        for (Field field : fields.values())
             bytes.add(fieldToBytes(field));
         bytes.add(new byte[]{TERMINATE});
         return bytes;
