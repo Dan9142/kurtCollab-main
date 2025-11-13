@@ -51,6 +51,7 @@ public class Kurt {
         creator.add(new Field.Password(pass));
 
         System.out.println(user);
+        System.out.println(user.getPassword());
     }
 
     public static byte[] readFile(String path) throws IOException {
