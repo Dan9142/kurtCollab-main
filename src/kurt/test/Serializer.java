@@ -16,45 +16,49 @@ class Serializer implements Field.Visitor<byte[]> {
     private final static Validator VALIDATOR = new Validator();
     private final static byte CONT_MARKER = (byte)0xFF;
     private final static byte TERMINATE = (byte)0xE0;
-    private final Map<FieldType, Field> fields;
+    private Map<FieldType, Field> fields;
+    private final Path path;
+    private User user;
 
-    public Serializer(Map<FieldType, Field> fields) {
-        this.fields = fields;
+    public Serializer(String path) {
+        this.path = Paths.get(path);
     }
 
     /**
      * Completely rewrites file with new values.
      *
-     * @param file The file you wish to write to.
      * @param numOfUsers The number of users you wish to
      * rewrite into this file.
      */
-    public void write(String file, int numOfUsers) throws IOException {
-        Path path = Paths.get(file);
-
+    public void initialize(int numOfUsers) throws IOException {
         Files.write(path, initHeader(numOfUsers));
+    }
+
+    public void write(User user) throws IOException {
+        this.user = user;
+
         List<byte[]> bytes = fieldsToBytes();
         for (byte[] bite : bytes)
             Files.write(path, bite, StandardOpenOption.APPEND);
     }
 
-    public List<byte[]> fieldsToBytes() {
+    private List<byte[]> fieldsToBytes() {
         List<byte[]> bytes = new ArrayList<>();
         bytes.add(new byte[]{CONT_MARKER});
-        for (Field field : fields.values())
+        for (Field field : user.getFieldMap().values())
             bytes.add(fieldToBytes(field));
         bytes.add(new byte[]{TERMINATE});
         return bytes;
     }
 
-    public byte[] initHeader(int numOfUsers) {
+    private byte[] initHeader(int numOfUsers) {
         int len = "VFF02".length();
         byte[] header = new byte[len + 4];
         System.arraycopy("VFF02".getBytes(StandardCharsets.UTF_8), 0, header, 0, len);
         return intToBytes(header, 5, numOfUsers);
     }
 
-    public byte[] fieldToBytes(Field field) {
+    private byte[] fieldToBytes(Field field) {
         if (!VALIDATOR.validate(field)) return new byte[0];
         return field.accept(this);
     }

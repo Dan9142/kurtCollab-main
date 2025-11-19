@@ -25,7 +25,7 @@ import javax.swing.JFrame;
 public class GUI
 {
 
-    static final String PATH = "src/kurt/test/sample.vff";
+    static final String PATH = "CSProject/kurtCollab-main/src/kurt/test/sample.vff";
     static JFrame frame = new JFrame("Kurt Collab");
     static JTextField text = new JTextField(50);
     static JButton enterButton = new JButton("Enter");
@@ -167,8 +167,6 @@ public class GUI
         Map<String, User> users = parser.map();
         initialSetup();
         initialActionListener();
-
-
     }
 
     public static byte[] readFile(String path) throws IOException {

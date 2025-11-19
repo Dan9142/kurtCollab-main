@@ -60,7 +60,7 @@ public class Parser extends ByteScanner {
         FieldType type = getID();
         if (stop(type)) throw error(EXIT_NULL_ID);
 
-        ExitCode code; // Assume that we failed to retrieve an ID.
+        ExitCode code;
         Creator creator = new Creator(new User());
         while (!isEnd() && !stop(type)) {
             // Creating appropriate user fields for every value.

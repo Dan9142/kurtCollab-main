@@ -4,10 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class User {
-    private final Map<FieldType, Field> fieldMap = new HashMap<>(2);
+    private final Map<FieldType, Field> fieldMap = new HashMap<>(3);
+    // private Map<Tag, Location> lookup = new HashMap<>();
 
     public void put(FieldType id, Field field) {
         fieldMap.put(id, field);
+    }
+
+    public Map<FieldType, Field> getFieldMap() {
+        return fieldMap;
     }
 
     public String getUsername() {
@@ -46,7 +51,7 @@ public class User {
                 {
                     Username: [ %s ], Password: [ %s ],
                     Date of Birth: [ %s ], Email: [ %s ],
-                    Reputation: [ %s ], Posts: [ %s ]
+                    Reputation: [ %.2f ], Posts: [ %d ]
                 }""";
         return String.format(format, getUsername(), getPassword(), getDob(),
                     getEmail(), getReputation(), getPosts());

@@ -2,8 +2,8 @@ package kurt.test;
 
 import java.util.Objects;
 
-abstract class Field {
-    interface Visitor<V> {
+public abstract class Field {
+    public interface Visitor<V> {
         V visit(Name field);
         V visit(Password field);
         V visit(DOB field);
@@ -12,11 +12,11 @@ abstract class Field {
         V visit(Posts field);
     }
 
-    static class Name extends Field {
-        Name(String value) { this.value = value; }
+    public static class Name extends Field {
+        public Name(String value) { this.value = value; }
 
         @Override
-        <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
+        public <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
 
         @Override
         public boolean equals(Object obj) {
@@ -28,11 +28,11 @@ abstract class Field {
         final String value;
     }
 
-    static class Password extends Field {
-        Password(String value) { this.value = value; }
+    public static class Password extends Field {
+        public Password(String value) { this.value = value; }
 
         @Override
-        <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
+        public <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
 
         @Override
         public boolean equals(Object obj) {
@@ -44,11 +44,11 @@ abstract class Field {
         final String value;
     }
 
-    static class DOB extends Field {
-        DOB(String value) { this.value = value; }
+    public static class DOB extends Field {
+        public DOB(String value) { this.value = value; }
 
         @Override
-        <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
+        public <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
 
         @Override
         public boolean equals(Object obj) {
@@ -60,11 +60,11 @@ abstract class Field {
         final String value;
     }
 
-    static class Email extends Field {
-        Email(String value) { this.value = value; }
+    public static class Email extends Field {
+        public Email(String value) { this.value = value; }
 
         @Override
-        <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
+        public <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
 
         @Override
         public boolean equals(Object obj) {
@@ -76,11 +76,11 @@ abstract class Field {
         final String value;
     }
 
-    static class Reputation extends Field {
-        Reputation(float value) { this.value = value; }
+    public static class Reputation extends Field {
+        public Reputation(float value) { this.value = value; }
 
         @Override
-        <V> V accept (Visitor<V> visitor) { return visitor.visit(this); }
+        public <V> V accept (Visitor<V> visitor) { return visitor.visit(this); }
 
         @Override
         public boolean equals(Object obj) {
@@ -92,11 +92,11 @@ abstract class Field {
         final float value;
     }
 
-    static class Posts extends Field {
-        Posts(int value) { this.value = value; }
+    public static class Posts extends Field {
+        public Posts(int value) { this.value = value; }
 
         @Override
-        <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
+        public <V> V accept(Visitor<V> visitor) { return visitor.visit(this); }
 
         @Override
         public boolean equals(Object obj) {
@@ -108,5 +108,5 @@ abstract class Field {
         final int value;
     }
 
-    abstract <V> V accept(Visitor<V> visitor);
+    public abstract <V> V accept(Visitor<V> visitor);
 }
