@@ -1,9 +1,9 @@
-package kurt.test;
+package kurt.access;
 
 public enum ExitCode {
     EXIT_INVALID_FILE(400, "Could not verify file."),
     EXIT_UNKNOWN_STATE(401, "Reached unexpected state in file."),
-    EXIT_UNEXPECTED_USERS(402, "Encountered an unexpected number of users."),
+    EXIT_UNEXPECTED_ELEMENTS(402, "Encountered an unexpected number of elements."),
     EXIT_PROCESSOR_FAILURE(403, "Invalid user field encountered."),
     EXIT_MAP_FAILURE(404, "Could not map user."),
     EXIT_NULL_ID(405, "Null field ID encountered."),

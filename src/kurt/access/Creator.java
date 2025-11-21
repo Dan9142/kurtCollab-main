@@ -1,7 +1,7 @@
-package kurt.test;
+package kurt.access;
 
-import static kurt.test.ExitCode.*;
-import static kurt.test.FieldType.*;
+import static kurt.access.ExitCode.*;
+import static kurt.access.FieldType.*;
 
 class Creator implements Field.Visitor<ExitCode> {
     private final User user;

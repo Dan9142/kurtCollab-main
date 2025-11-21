@@ -1,4 +1,4 @@
-package kurt.test;
+package kurt.access;
 
 public enum NumberType {
     INT(4), LONG(8),

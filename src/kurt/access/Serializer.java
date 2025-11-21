@@ -1,4 +1,4 @@
-package kurt.test;
+package kurt.access;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static kurt.test.NumberType.*;
+import static kurt.access.NumberType.*;
 
 class Serializer implements Field.Visitor<byte[]> {
     private final static Validator VALIDATOR = new Validator();

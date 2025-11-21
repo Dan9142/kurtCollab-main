@@ -1,18 +1,14 @@
 package kurt.ui;
 
-import kurt.test.Parser;
-import kurt.test.User;
+import kurt.access.Parser;
+import kurt.access.User;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Image;
-import java.awt.BasicStroke;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,7 +21,7 @@ import javax.swing.JFrame;
 public class GUI
 {
 
-    static final String PATH = "CSProject/kurtCollab-main/src/kurt/test/sample.vff";
+    static final String PATH = "CSProject/kurtCollab-main/src/kurt/access/sample.vff";
     static JFrame frame = new JFrame("Kurt Collab");
     static JTextField text = new JTextField(50);
     static JButton enterButton = new JButton("Enter");

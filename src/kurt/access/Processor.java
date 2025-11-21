@@ -1,4 +1,4 @@
-package kurt.test;
+package kurt.access;
 
 class Processor implements Field.Visitor<Object> {
     public Object process(Field field) {

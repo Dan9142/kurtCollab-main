@@ -1,4 +1,4 @@
-package kurt.test;
+package kurt.access;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -6,25 +6,23 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class Kurt {
-    static final String USERS = "kurtCollab-main/src/kurt/test/users.vff";
-    static final String WRITE = "kurtCollab-main/src/kurt/test/writeTest.vff";
+    static final String KRAT = "kurtCollab-main/src/kurt/access/files/index.krat";
+    static final String USERS = "kurtCollab-main/src/kurt/access/files/users.vff";
+    static final String WRITE = "kurtCollab-main/src/kurt/access/files/writeTest.vff";
 
     static boolean hadError = false;
 
     public static void main(String[] args) throws IOException {
-        Scanner input = new Scanner(System.in);
-        Parser parser = new Parser(readFile(WRITE), new HashMap<>());
-
-        Map<String, User> users = parser.map();
+        Indexer indexer = new Indexer(readFile(KRAT), new HashMap<>());
+        Map<String, List<Post>> tags = indexer.index();
         if (hadError) return;
+        System.out.println("Success");
 
-        for (User user : users.values())
-            System.out.println(user);
+        for (String tag : tags.keySet())
+            System.out.println(tag);
 
-        Serializer writer = new Serializer(WRITE);
-        writer.initialize(users.size());
-        for (User user : users.values())
-            writer.write(user);
+        for (List<Post> posts : tags.values())
+            System.out.println(posts);
     }
 
     public static byte[] readFile(String path) throws IOException {

@@ -1,4 +1,4 @@
-package kurt.test;
+package kurt.access;
 
 public enum FieldType {
     USERNAME("USERNAME"), PWD("PASSWORD"),

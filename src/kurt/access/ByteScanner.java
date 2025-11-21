@@ -1,10 +1,10 @@
-package kurt.test;
+package kurt.access;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-import static kurt.test.NumberType.*;
-import static kurt.test.ExitCode.*;
+import static kurt.access.NumberType.*;
+import static kurt.access.ExitCode.*;
 
 public class ByteScanner {
     static class ParseFailure extends RuntimeException {}
@@ -71,11 +71,18 @@ public class ByteScanner {
         return buf.getFloat();
     }
 
+    public void verifyHeader(String target, int length) {
+        String header = asString(length);
+        if (!header.equals(target))
+            throw error(EXIT_INVALID_FILE);
+    }
+
     public boolean isEnd() {
         return buf.position() >= capacity;
     }
 
     public boolean match(byte value) {
+        byte comp = buf.get(buf.position());
         return buf.get(buf.position()) == value; // Check current
     }
 

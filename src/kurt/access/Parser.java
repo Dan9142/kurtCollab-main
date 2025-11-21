@@ -1,12 +1,12 @@
-package kurt.test;
+package kurt.access;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static kurt.test.FieldType.*;
-import static kurt.test.NumberType.*;
-import static kurt.test.ExitCode.*;
+import static kurt.access.FieldType.*;
+import static kurt.access.NumberType.*;
+import static kurt.access.ExitCode.*;
 
 public class Parser extends ByteScanner {
     public Map<String, User> maps;
@@ -38,7 +38,7 @@ public class Parser extends ByteScanner {
     }
 
     private Map<String, User> mapUsers() {
-        verifyHeader();
+        verifyHeader("VFF02", 5);
         int numOfUsers = asInt(INT); // Retrieve int and advance.
         if (numOfUsers == 0) return Collections.emptyMap();
 
@@ -51,7 +51,7 @@ public class Parser extends ByteScanner {
         }
 
         if (maps.size() != numOfUsers)
-            throw error(EXIT_UNEXPECTED_USERS,
+            throw error(EXIT_UNEXPECTED_ELEMENTS,
                     String.format("Expected %d users but found %d", numOfUsers, maps.size()));
         return maps;
     }
@@ -95,11 +95,5 @@ public class Parser extends ByteScanner {
 
     private boolean stop(FieldType type) {
         return type == null || type == TERMINATE;
-    }
-
-    private void verifyHeader() {
-        String header = asString(5);
-        if (!header.equals("VFF02"))
-            throw error(EXIT_INVALID_FILE);
     }
 }
