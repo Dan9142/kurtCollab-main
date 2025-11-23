@@ -27,11 +27,21 @@ class Serializer implements Field.Visitor<byte[]> {
     /**
      * Completely rewrites file with new values.
      *
-     * @param numOfUsers The number of users you wish to
+     * @param num The number of elements you wish to
      * rewrite into this file.
      */
-    public void initialize(int numOfUsers) throws IOException {
-        Files.write(path, initHeader(numOfUsers));
+    public void initialize(int num, String header) throws IOException {
+        Files.write(path, initHeader(num, header));
+    }
+
+    public void write(List<Post> posts, String tag) throws IOException {
+        List<byte[]> bytes = new ArrayList<>();
+        bytes.add(new byte[]{CONT_MARKER});
+        bytes.add(createStringBytes(tag));
+        bytes.addAll(postsToBytes(posts));
+
+        for (byte[] bite : bytes)
+            Files.write(path, bite, StandardOpenOption.APPEND);
     }
 
     public void write(User user) throws IOException {
@@ -40,6 +50,17 @@ class Serializer implements Field.Visitor<byte[]> {
         List<byte[]> bytes = fieldsToBytes();
         for (byte[] bite : bytes)
             Files.write(path, bite, StandardOpenOption.APPEND);
+    }
+
+    private List<byte[]> postsToBytes(List<Post> posts) {
+        List<byte[]> bytes = new ArrayList<>();
+
+        for (Post post : posts) {
+            bytes.add(new byte[]{(byte)0xF0});
+            bytes.addAll(postToBytes(post));
+        }
+
+        return bytes;
     }
 
     private List<byte[]> fieldsToBytes() {
@@ -51,11 +72,21 @@ class Serializer implements Field.Visitor<byte[]> {
         return bytes;
     }
 
-    private byte[] initHeader(int numOfUsers) {
-        int len = "VFF02".length();
-        byte[] header = new byte[len + 4];
-        System.arraycopy("VFF02".getBytes(StandardCharsets.UTF_8), 0, header, 0, len);
-        return intToBytes(header, 5, numOfUsers);
+    private byte[] initHeader(int num, String header) {
+        int len = header.length();
+        byte[] bytes = new byte[len + 4];
+        System.arraycopy(header.getBytes(StandardCharsets.UTF_8), 0, bytes, 0, len);
+        return intToBytes(bytes, len, num);
+    }
+
+    private List<byte[]> postToBytes(Post post) {
+        List<byte[]> bytes = new ArrayList<>();
+
+        bytes.add(createStringBytes(post.getPoster()));
+        bytes.add(intToBytes(new byte[INT.sizeOf()], 0, post.getLength()));
+        bytes.add(intToBytes(new byte[LONG.sizeOf()], 0, post.getOffset()));
+
+        return bytes;
     }
 
     private byte[] fieldToBytes(Field field) {
@@ -107,6 +138,25 @@ class Serializer implements Field.Visitor<byte[]> {
         }
 
         return bytes;
+    }
+
+    private byte[] intToBytes(byte[] bytes, int start, long value) {
+        int shift = 64;
+        while (start < bytes.length) {
+            shift -= 8;
+            bytes[start] = (byte)(value >>> shift);
+            start++;
+        }
+
+        return bytes;
+    }
+
+    private byte[] createStringBytes(String string) {
+        int len = string.length();
+        byte[] value = new byte[len + 1];
+        value[0] = (byte)len;
+        System.arraycopy(string.getBytes(StandardCharsets.UTF_8), 0, value, 1, len);
+        return value;
     }
 
     private byte[] createStringBytes(byte id, String string) {

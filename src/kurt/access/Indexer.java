@@ -1,6 +1,10 @@
 package kurt.access;
 
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +12,7 @@ import static kurt.access.ExitCode.*;
 import static kurt.access.NumberType.*;
 
 public class Indexer extends ByteScanner {
+    private static final String DUMP = "kurtCollab-main/src/kurt/access/files/posts.dump";
     private final Map<String, List<Post>> tags;
     private static final byte CONT_MARKER = (byte)0xFF;
     private static final byte END_MARKER = (byte)0x7F;
@@ -25,9 +30,36 @@ public class Indexer extends ByteScanner {
         }
     }
 
-    public Map<String, List<Post>> mapTags() {
-        verifyHeader("KRAT", 4);
+    /**
+     * Adds post into existing ArrayList if the tag already exists.
+     * Creates new entry in Map otherwise.
+     *
+     * @param post The new post to add.
+     * @param tag A new or already existing tag.
+     */
+    public void post(Post post, String tag, Map<String, List<Post>> tagMap) {
+        if (tag == null || tag.isEmpty())
+            return;
+
+        tagMap.computeIfAbsent(tag, key -> new ArrayList<>()).add(post);
+    }
+
+    public static long dumpPost(String content) throws IOException {
+        long fsize;
+
+        try (RandomAccessFile ra = new RandomAccessFile(DUMP, "rw")) {
+            fsize = ra.length();
+            ra.seek(fsize);
+            ra.write(content.getBytes(StandardCharsets.UTF_8));
+        }
+
+        return fsize;
+    }
+
+    private Map<String, List<Post>> mapTags() {
+        verifyHeader("KRAT");
         int numOfTags = asInt(INT);
+        if (numOfTags == 0) return Collections.emptyMap();
 
         while (!isEnd() && !match(END_MARKER)) {
             if (!match(CONT_MARKER))
@@ -51,8 +83,9 @@ public class Indexer extends ByteScanner {
         while (!isEnd() && match((byte)0xF0)) {
             next();
             String poster = asString(asInt(BYTE));
+            int strlen = asInt(INT);
             long offset = asLong();
-            posts.add(new Post(poster, offset));
+            posts.add(new Post(poster, offset, strlen));
         }
 
         tags.put(tag, posts);

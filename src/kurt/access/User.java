@@ -5,7 +5,6 @@ import java.util.Map;
 
 public class User {
     private final Map<FieldType, Field> fieldMap = new HashMap<>(3);
-    // private Map<Tag, Location> lookup = new HashMap<>();
 
     public void put(FieldType id, Field field) {
         fieldMap.put(id, field);
@@ -35,7 +34,7 @@ public class User {
         return email == null ? "N/A" : email.value;
     }
 
-    public double getReputation() {
+    public float getReputation() {
         Field.Reputation rep = (Field.Reputation)fieldMap.get(FieldType.REP);
         return rep == null ? 0 : rep.value;
     }

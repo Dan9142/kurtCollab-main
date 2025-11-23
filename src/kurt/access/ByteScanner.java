@@ -71,8 +71,9 @@ public class ByteScanner {
         return buf.getFloat();
     }
 
-    public void verifyHeader(String target, int length) {
-        String header = asString(length);
+    public void verifyHeader(String target) {
+        int strlen = target.length();
+        String header = asString(strlen);
         if (!header.equals(target))
             throw error(EXIT_INVALID_FILE);
     }

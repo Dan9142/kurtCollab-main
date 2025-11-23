@@ -1,0 +1,310 @@
+/**
+ * @file
+ * @brief [Bubble sort](https://en.wikipedia.org/wiki/Bubble_sort) algorithm
+ * implementation
+ */
+#include <assert.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/**
+ * Display elements of array
+ * @param arr array to be display
+ * @param n length of array
+ */
+void display(const int *arr, int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+
+/**
+ * Swap two values by using pointer
+ * @param first first pointer of first number
+ * @param second second pointer of second number
+ */
+void swap(int *first, int *second)
+{
+    int temp = *first;
+    *first = *second;
+    *second = temp;
+}
+
+/**
+ * Bubble sort algorithm implementation
+ * @param arr array to be sorted
+ * @param size size of array
+ */
+void bubbleSort(int *arr, int size)
+{
+    for (int i = 0; i < size - 1; i++)
+    {                         /* for each array index */
+        bool swapped = false; /* flag to check if any changes had to be made */
+        /* perform iterations until no more changes were made or outer loop
+            executed for all array indices */
+        for (int j = 0; j < size - 1 - i; j++)
+        { /* for each element in the array */
+            if (arr[j] > arr[j + 1])
+            { /* if the order of successive elements needs update */
+                swap(&arr[j], &arr[j + 1]);
+                swapped = true; /* set flag */
+            }
+        }
+        if (!swapped)
+        {
+            /* since no more updates we made, the array is already sorted
+                this is an optimization for early termination */
+            break;
+        }
+    }
+}
+
+/**
+ * Test function
+ */
+void test()
+{
+    const int size = 10;
+    int *arr = (int *)calloc(size, sizeof(int));
+
+    /* generate size random numbers from 0 to 100 */
+    for (int i = 0; i < size; i++)
+    {
+        arr[i] = rand() % 100;
+    }
+    bubbleSort(arr, size);
+    for (int i = 0; i < size - 1; ++i)
+    {
+        assert(arr[i] <= arr[i + 1]);
+    }
+    free(arr);
+}
+
+/** Driver Code */
+int main(int argc, const char *argv[])
+{
+    /* Intializes random number generator */
+    srand(time(NULL));
+    test();
+    return 0;
+}/**
+ * @file
+ * @brief [Bubble sort](https://en.wikipedia.org/wiki/Bubble_sort) algorithm
+ * implementation using recursion.
+ */
+#include <assert.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/**
+ * Swapped two numbers using pointer
+ * @param first first pointer of first number
+ * @param second second pointer of second number
+ */
+void swap(int *first, int *second)
+{
+    int temp = *first;
+    *first = *second;
+    *second = temp;
+}
+
+/**
+ * Bubble sort algorithm implements using recursion
+ * @param arr array to be sorted
+ * @param size size of array
+ */
+void bubbleSort(int *arr, int size)
+{
+    if (size == 1)
+    {
+        return;
+    }
+    bool swapped = false;
+    for (int i = 0; i < size - 1; ++i)
+    {
+        if (arr[i] > arr[i + 1])
+        {
+            swap(arr + i, arr + i + 1);
+            swapped = true;
+        }
+    }
+    if (swapped)
+    {
+        bubbleSort(arr, size - 1);
+    }
+}
+
+/**
+ * Test function
+ */
+void test()
+{
+    const int size = 10;
+    int *arr = (int *)calloc(size, sizeof(int));
+
+    /* generate size random numbers from 0 to 100 */
+    for (int i = 0; i < size; i++)
+    {
+        arr[i] = rand() % 100;
+    }
+    bubbleSort(arr, size);
+    for (int i = 0; i < size - 1; ++i)
+    {
+        assert(arr[i] <= arr[i + 1]);
+    }
+    free(arr);
+}
+
+/** Driver Code */
+int main()
+{
+    /* Intializes random number generator */
+    srand(time(NULL));
+    test();
+    return 0;
+}/**
+ * @file
+ * @brief Implementation of [merge
+ * sort](https://en.wikipedia.org/wiki/Merge_sort) algorithm
+ */
+#include <stdio.h>
+#include <stdlib.h>
+
+/**
+ * @addtogroup sorting Sorting algorithms
+ * @{
+ */
+/** Swap two integer variables
+ * @param [in,out] a pointer to first variable
+ * @param [in,out] b pointer to second variable
+ */
+void swap(int *a, int *b)
+{
+    int t;
+    t = *a;
+    *a = *b;
+    *b = t;
+}
+
+/**
+ * @brief Perform merge of segments.
+ *
+ * @param a array to sort
+ * @param l left index for merge
+ * @param r right index for merge
+ * @param n total number of elements in the array
+ */
+void merge(int *a, int l, int r, int n)
+{
+    int *b = (int *)malloc(n * sizeof(int)); /* dynamic memory must be freed */
+    if (b == NULL)
+    {
+        printf("Can't Malloc! Please try again.");
+        exit(EXIT_FAILURE);
+    }
+    int c = l;
+    int p1, p2;
+    p1 = l;
+    p2 = ((l + r) / 2) + 1;
+    while ((p1 < ((l + r) / 2) + 1) && (p2 < r + 1))
+    {
+        if (a[p1] <= a[p2])
+        {
+            b[c++] = a[p1];
+            p1++;
+        }
+        else
+        {
+            b[c++] = a[p2];
+            p2++;
+        }
+    }
+
+    if (p2 == r + 1)
+    {
+        while ((p1 < ((l + r) / 2) + 1))
+        {
+            b[c++] = a[p1];
+            p1++;
+        }
+    }
+    else
+    {
+        while ((p2 < r + 1))
+        {
+            b[c++] = a[p2];
+            p2++;
+        }
+    }
+
+    for (c = l; c < r + 1; c++) a[c] = b[c];
+
+    free(b);
+}
+
+/** Merge sort algorithm implementation
+ * @param a array to sort
+ * @param n number of elements in the array
+ * @param l index to sort from
+ * @param r index to sort till
+ */
+void merge_sort(int *a, int n, int l, int r)
+{
+    if (r - l == 1)
+    {
+        if (a[l] > a[r])
+            swap(&a[l], &a[r]);
+    }
+    else if (l != r)
+    {
+        merge_sort(a, n, l, (l + r) / 2);
+        merge_sort(a, n, ((l + r) / 2) + 1, r);
+        merge(a, l, r, n);
+    }
+
+    /* no change if l == r */
+}
+/** @} */
+
+/** Main function */
+int main(void)
+{
+    int *a, n, i;
+    printf("Enter Array size: ");
+    scanf("%d", &n);
+    if (n <= 0) /* exit program if arraysize is not greater than 0 */
+    {
+        printf("Array size must be Greater than 0!\n");
+        return 1;
+    }
+    a = (int *)malloc(n * sizeof(int));
+    if (a == NULL) /* exit program if can't malloc memory */
+    {
+        printf("Can't Malloc! Please try again.");
+        return 1;
+    }
+    for (i = 0; i < n; i++)
+    {
+        printf("Enter number[%d]: ", i);
+        scanf("%d", &a[i]);
+    }
+
+    merge_sort(a, n, 0, n - 1);
+    printf("Sorted Array: ");
+    for (i = 0; i < n; i++)
+    {
+        printf("%d ", a[i]);
+    }
+    printf("\n");
+
+    free(a);
+
+    return 0;
+}int main() {printf("hello, world!"); return 0;}

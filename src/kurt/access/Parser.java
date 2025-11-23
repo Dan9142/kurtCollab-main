@@ -38,7 +38,7 @@ public class Parser extends ByteScanner {
     }
 
     private Map<String, User> mapUsers() {
-        verifyHeader("VFF02", 5);
+        verifyHeader("VFF02");
         int numOfUsers = asInt(INT); // Retrieve int and advance.
         if (numOfUsers == 0) return Collections.emptyMap();
 
