@@ -20,8 +20,8 @@ public class Serializer implements Field.Visitor<byte[]> {
     private final Path path;
     private User user;
 
-    public Serializer(String path) {
-        this.path = Paths.get(path);
+    public Serializer(Path path) {
+        this.path = path;
     }
 
     /**

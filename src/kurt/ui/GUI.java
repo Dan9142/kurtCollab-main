@@ -1,38 +1,27 @@
 package kurt.ui;
 
-import kurt.access.*;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 
+import kurt.access.*;
 import static kurt.access.Kurt.*;
 
 
 public class GUI
 {
-
-    //public static Indexer indexer;
     static int universalTagMax = 0;
     static boolean tagNeeded = false;
     static int profilePresses = 0;
     static int ratePresses = 0;
     static int postPresses = 0;
-    //private static Map<String, List<Post>> tagMap = new HashMap<>();
-    //private static Indexer indexer;
-    private static User currentUser = null;
-    static final String DUMP = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/posts.dump";
-    static final String SAMPLE = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/sample.vff";
-    static final String KRAT = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/index.krat";
 
 
     //Initial Setup
@@ -63,7 +52,6 @@ public class GUI
 
     //Login Variables
     static int loginPresses = 0;
-    //static User user = new User();
     static boolean usernameRight = false;
     static String usernameStorage = "";
     static int tagCounter = 1;
@@ -175,7 +163,12 @@ public class GUI
         loginTagDisplayArea.setWrapStyleWord(true);
         loginTagDisplayArea.setEditable(false);
 
-        loginPanel.add(loginTagDisplayArea);
+        JScrollPane loginTagScroll = new JScrollPane(loginTagDisplayArea);
+        loginTagScroll.setBounds(400,150,250,100);
+        loginTagScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        loginTagScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        loginPanel.add(loginTagScroll);
         loginTagDisplayAuthor.setBounds(400,110,200,50);
         loginTagNextButton.setBounds(340,145,60,60);
         loginPanel.add(loginTagNextButton);
@@ -201,6 +194,7 @@ public class GUI
     {
         firstFrame.dispose();
     }
+
     public static String getUsername() throws IOException
     {
         String username = loginText.getText();
@@ -212,14 +206,17 @@ public class GUI
         return username;
 
     }
+
     public static boolean checkingUsername() throws IOException
     {
         String username = loginText.getText();
         User user = users.get(username);
+
         if (user == null)
         {
             return false;
         }
+
         usernameStorage = username;
         return true;
     }
@@ -228,14 +225,13 @@ public class GUI
     {
         String password = loginText.getText();
         User user = users.get(usernameStorage);
-        if (!getUsername().isEmpty());
+
+        if (user.getPassword().equals(password))
         {
-            if (user.getPassword().equals(password))
-            {
-                loginText.setText("");
-                return true;
-            }
+            loginText.setText("");
+            return true;
         }
+
         return false;
     }
 
@@ -248,27 +244,25 @@ public class GUI
             {
                 try
                 {
-                    if (checkingUsername() == true && usernameRight == false)
+                    if (checkingUsername() && !usernameRight)
                     {
                         loginLabel.setText("Hello, " + getUsername() + ". Enter Your Password.");
                         loginTextPrompt.setText("Enter Password");
-                        User user = users.get(usernameStorage);
-                        currentUser = user;
+                        currentUser = users.get(usernameStorage);
                         usernameRight = true;
                         loginText.setText("");
                         loginPresses++;
                         //loginEnterButton.removeActionListener(this);
                     }
-                    else if (checkingUsername() == false && usernameRight == false)
+                    else if (!checkingUsername() && !usernameRight)
                     {
                         loginLabel.setText("Username Not Found. Try Again!");
-                        System.out.println("akdmkasdk");
                         //initialActionListener();
                     }
 
-                    if (usernameRight == true)
+                    if (usernameRight)
                     {
-                        if (checkingPassword() == true)
+                        if (checkingPassword())
                         {
                             loginLabel.setText("");
                             //loginEnterButton.setVisible(false);
@@ -287,9 +281,8 @@ public class GUI
                             loginPresses = 0;
                             mainMenuSetup();
                         }
-                        else if (checkingPassword() == false)
+                        else if (!checkingPassword())
                         {
-                            System.out.println("ferferfer");
                             if (loginPresses > 1)
                             {
                                 loginLabel.setText("Incorrect Password. Try Again!");
@@ -387,22 +380,7 @@ public class GUI
                 }
                 if (emailEntered && DOBEntered && passwordEntered && usernameEntered)
                 {
-                    User newUser = new User();
-                    Creator creator = new Creator(newUser);
-
-                    creator.add(new Field.Name(username));
-                    creator.add(new Field.Password(password));
-                    creator.add(new Field.DOB(DOB));
-                    creator.add(new Field.Email(email));
-                    creator.add(new Field.Reputation(0.0f));
-                    creator.add(new Field.Posts(0));
-
-                    if (newUser.getUsername() == null || newUser.getPassword() == null)
-                    {
-                        System.out.println("Registration failed: Username and password are required!");
-                        return;
-                    }
-                    users.put(username, newUser);
+                    if (createUser(username, password, DOB, email)) return;
 
                     try {
                         saveAllUsers();
@@ -420,7 +398,6 @@ public class GUI
                     usernameEntered = false;
                     passwordEntered = false;
                     DOBEntered = false;
-                    emailEntered = false;
                 }
             }
         });
@@ -430,7 +407,7 @@ public class GUI
     {
         String tag = loginTagSearchText.getText();
 
-        List<Post> posts = Kurt.tagMap.get(tag);
+        List<Post> posts = tagMap.get(tag);
         if (posts == null || posts.isEmpty()) {
             System.out.println("No posts found for tag: " + tag);
             return;
@@ -449,7 +426,7 @@ public class GUI
     {
         String tag = mainTagSearchText.getText();
 
-        List<Post> posts = Kurt.tagMap.get(tag);
+        List<Post> posts = tagMap.get(tag);
         if (posts == null || posts.isEmpty()) {
             System.out.println("No posts found for tag: " + tag);
             return;
@@ -499,13 +476,17 @@ public class GUI
         mainMenuPanel.add(mainTagSearchText);
         mainTagSearchButton.setBounds(400,0,100,100);
         mainMenuPanel.add(mainTagSearchButton);
-        mainTagDisplayArea.setBounds(450,180,250,100);
         mainTagDisplayArea.setText("");
         mainTagDisplayArea.setLineWrap(true);
         mainTagDisplayArea.setWrapStyleWord(true);
         mainTagDisplayArea.setEditable(false);
 
-        mainMenuPanel.add(mainTagDisplayArea);
+        JScrollPane mainTagScroll = new JScrollPane(mainTagDisplayArea);
+        mainTagScroll.setBounds(450,180,250,100);
+        mainTagScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        mainTagScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        mainMenuPanel.add(mainTagScroll);
         mainTagDisplayAuthor.setBounds(420,140,200,50);
         mainTagNextButton.setBounds(390,175,60,60);
         mainMenuPanel.add(mainTagNextButton);
@@ -686,7 +667,7 @@ public class GUI
                 System.out.println(tag);
                 mainPostDisplayArea.setText("");
                 mainTagPostField.setText("");
-                Kurt.indexer.post(post, tag, Kurt.tagMap);
+                indexer.post(post, tag, tagMap);
                 try
                 {
                     saveAllPosts();
@@ -742,22 +723,29 @@ public class GUI
             public void actionPerformed(ActionEvent e)
             {
                 String targetUser = rateUserText.getText();
-                int rating = Integer.parseInt(rateUserNumberText.getText());
+                float rating = Float.parseFloat(rateUserNumberText.getText());
                 User user = users.get(targetUser);
                 if (user == null)
                 {
                     rateUserLabel.setText("Username does not exist!");
                     return;
                 }
-                float newRating = rating;
                 float currentRating = user.getReputation();
-                float averageRating = (newRating + currentRating) / 2;
+                float averageRating = (rating + currentRating) / 2;
                 Creator creator = new Creator(user);
                 creator.add(new Field.Reputation(averageRating));
                 rateUserLabel.setText("Success! " + targetUser + " now has a rating of " + averageRating);
                 rateUserText.setText("");
                 rateUserNumberText.setText("");
 
+                try
+                {
+                    saveAllUsers();
+                }
+                catch (IOException ex)
+                {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -771,21 +759,20 @@ public class GUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("sasada");
                 profilePresses++;
                 if (!viewingProfile && profilePresses % 2 != 0)
                 {
                     profilePanel.setVisible(true);
                     mainMenuPanel.setVisible(false);
-                    profileUsername.setBounds(0,0,100,50);
+                    profileUsername.setBounds(0,0,200,50);
                     profileDOB.setBounds(0,50,200,50);
                     profileUsername.setText("Username: " + currentUser.getUsername());
                     profileDOB.setText("DOB: " + currentUser.getDob());
                     profileEmail.setBounds(0,100,200,50);
                     profileEmail.setText("Email: " + currentUser.getEmail());
-                    profilePosts.setBounds(0, 150, 100, 50);
+                    profilePosts.setBounds(0, 150, 200, 50);
                     profilePosts.setText("Posts: " + currentUser.getPosts());
-                    profileReputation.setBounds(0, 200, 100, 50);
+                    profileReputation.setBounds(0, 200, 200, 50);
                     profileReputation.setText("Reputation: " + currentUser.getReputation());
                     profilePanel.add(profileUsername);
                     profilePanel.add(profileDOB);
@@ -817,9 +804,11 @@ public class GUI
     public static void main(String[] args) throws IOException
     {
         Parser parser = new Parser(readFile(SAMPLE), new HashMap<>());
-        Kurt.indexer = new Indexer(readFile(KRAT), new HashMap<>());
+        indexer = new Indexer(readFile(KRAT), new HashMap<>());
         users = parser.map();
-        Kurt.tagMap = Kurt.indexer.index();
+        tagMap = indexer.index();
+        if (hadError) return;
+
         loginSetup();
         loginActionListener();
         registerSwitchActionListener();
@@ -832,10 +821,5 @@ public class GUI
         logoutButtonActionListener();
         rateSwitchButtonActionListener();
         rateEnterButtonActionListener();
-    }
-
-    public static byte[] readFile(String path) throws IOException
-    {
-        return Files.readAllBytes(Paths.get(path));
     }
 }

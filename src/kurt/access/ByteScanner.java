@@ -7,11 +7,10 @@ import static kurt.access.NumberType.*;
 import static kurt.access.ExitCode.*;
 
 public class ByteScanner {
-    static class ParseFailure extends RuntimeException {}
+    protected static class ParseFailure extends RuntimeException {}
 
     private final ByteBuffer buf;
     private final int capacity;
-    private byte save = (byte)0x00;
 
     public ByteScanner(byte[] buffer) {
         this.buf = ByteBuffer.wrap(buffer);
@@ -25,7 +24,7 @@ public class ByteScanner {
      * @return New string if there is enough space in the buffer or
      * null otherwise.
      */
-    public String asString(int length) {
+    protected String asString(int length) {
         if (length > buf.remaining())
             throw error(EXIT_TRUNCATED_FILE,
                     "Attempted to move " + (length - buf.remaining()) + " byte(s) past buffer.");
@@ -42,7 +41,7 @@ public class ByteScanner {
      * @return An integer if there is enough bytes in the buffer.
      * Otherwise, the minimum integer value will be returned.
      * */
-    public int asInt(NumberType type) {
+    protected int asInt(NumberType type) {
         if (type.sizeOf() > buf.remaining())
             throw error(EXIT_TRUNCATED_FILE,
                     "Attempted to move " + (type.sizeOf() - buf.remaining()) + " bytes past buffer");
@@ -50,73 +49,79 @@ public class ByteScanner {
         else return buf.get();
     }
 
-    public long asLong() {
+    protected long asLong() {
         if (LONG.sizeOf() > buf.remaining())
             throw error(EXIT_TRUNCATED_FILE,
                     "Attempted to move " + (LONG.sizeOf() - buf.remaining()) + " bytes past buffer");
         return buf.getLong();
     }
 
-    public double asDouble() {
+    protected double asDouble() {
         if (DOUBLE.sizeOf() > buf.remaining())
             throw error(EXIT_TRUNCATED_FILE,
                     "Attempted to move " + (DOUBLE.sizeOf() - buf.remaining()) + " bytes past buffer");
         return buf.getDouble();
     }
 
-    public float asFloat() {
+    protected float asFloat() {
         if (FLOAT.sizeOf() > buf.remaining())
             throw error(EXIT_TRUNCATED_FILE,
                     "Attempted to move " + (FLOAT.sizeOf() - buf.remaining()) + " bytes past buffer");
         return buf.getFloat();
     }
 
-    public void verifyHeader(String target) {
+    /**
+     * Checks beginning of file to verify file header matches the target string.
+     *
+     * @param target The target string that the file header needs to match.
+     */
+    protected void verifyHeader(String target) {
         int strlen = target.length();
         String header = asString(strlen);
         if (!header.equals(target))
             throw error(EXIT_INVALID_FILE);
     }
 
-    public boolean isEnd() {
+    protected boolean isEnd() {
         return buf.position() >= capacity;
     }
 
-    public boolean match(byte value) {
+    protected boolean match(byte value) {
         byte comp = buf.get(buf.position());
         return buf.get(buf.position()) == value; // Check current
     }
 
-    public byte next() {
+    protected byte next() {
         buf.position(buf.position() + 1); // Next
         return buf.get(buf.position() - 1);
     }
 
-    public void save(byte value) {
-        this.save = value;
-    }
-
-    public byte retrieve() {
-        return this.save;
-    }
-
-    public int pos() {
+    protected int pos() {
         return buf.position();
     }
 
-    public void pos(int newPos) {
-        if (newPos > buf.remaining())
-            throw error(EXIT_TRUNCATED_FILE,
-                    "Attempted to move " + (newPos - buf.remaining()) + " bytes past buffer");
-        buf.position(newPos);
-    }
-
-    ParseFailure error(ExitCode exitCode, String context) {
+    /**
+     * Handles parse level failures and calls Kurt's report method
+     * with additional context.
+     *
+     * @param exitCode The exit code that needs to be reported.
+     * @param context Additional context relating to the error.
+     *
+     * @return A ParseFailure exception that the caller can optionally throw.
+     */
+    protected ParseFailure error(ExitCode exitCode, String context) {
         Kurt.report(exitCode.toString(), context, pos());
         return new ParseFailure();
     }
 
-    ParseFailure error(ExitCode exitCode) {
+    /**
+     * Handles parse level failures and calls Kurt's report method.
+     *
+     * @param exitCode The exit code that needs to be reported.
+     *
+     * @return A ParseFailure exception that the caller can optionally throw.
+     */
+    protected ParseFailure error(ExitCode exitCode) {
         Kurt.report(exitCode.toString(), pos());
         return new ParseFailure();
     }
