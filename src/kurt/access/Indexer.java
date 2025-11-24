@@ -12,7 +12,7 @@ import static kurt.access.ExitCode.*;
 import static kurt.access.NumberType.*;
 
 public class Indexer extends ByteScanner {
-    private static final String DUMP = "kurtCollab-main/src/kurt/access/files/posts.dump";
+    private static final String DUMP = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/posts.dump";
     private final Map<String, List<Post>> tags;
     private static final byte CONT_MARKER = (byte)0xFF;
     private static final byte END_MARKER = (byte)0x7F;

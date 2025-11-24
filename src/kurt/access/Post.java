@@ -25,7 +25,7 @@ public class Post {
 
     @Override
     public String toString() {
-        String format = "Poster: %s, Data@[ %d ]";
+        String format = "Poster: %s";
         return String.format(format, this.poster, this.offset);
     }
 }

@@ -3,11 +3,11 @@ package kurt.access;
 import static kurt.access.ExitCode.*;
 import static kurt.access.FieldType.*;
 
-class Creator implements Field.Visitor<ExitCode> {
+public class Creator implements Field.Visitor<ExitCode> {
     private final User user;
     private final Validator validator;
 
-    Creator(User user) {
+    public Creator(User user) {
         this.user = user;
         validator = new Validator();
     }

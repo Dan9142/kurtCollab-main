@@ -7,12 +7,12 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 
 /**
- *  The TextPrompt class will display a prompt over top of a text component when
- *  the Document of the text field is empty. The Show property is used to
+ *  The TextPrompt class will display a prompt over top of a loginText component when
+ *  the Document of the loginText field is empty. The Show property is used to
  *  determine the visibility of the prompt.
  *
  *  The Font and foreground Color of the prompt will default to those properties
- *  of the parent text component. You are free to change the properties after
+ *  of the parent loginText component. You are free to change the properties after
  *  class construction.
  */
 public class TextPrompt extends JLabel

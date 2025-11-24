@@ -8,12 +8,12 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class Kurt {
-    static final String DUMP = "kurtCollab-main/src/kurt/access/files/posts.dump";
-    static final String SAMPLE = "kurtCollab-main/src/kurt/access/files/sample.vff";
-    static final String KRAT = "kurtCollab-main/src/kurt/access/files/test.krat";
+    static final String DUMP = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/posts.dump";
+    public static final String SAMPLE = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/sample.vff";
+    static final String KRAT = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/test.krat";
 
-    private static Map<String, User> users = new HashMap<>();
-    private static Map<String, List<Post>> tagMap = new HashMap<>();
+    public static Map<String, User> users = new HashMap<>();
+    public static Map<String, List<Post>> tagMap = new HashMap<>();
     private static Indexer indexer;
     private static User currentUser = null;
 
@@ -140,12 +140,12 @@ public class Kurt {
 
         users.put(username, newUser);
 
-        saveUser(newUser);
+        saveAllUsers();
 
         System.out.println("Registration successful! You can now login.");
     }
 
-    private static void saveUser(User user) throws IOException {
+    public static void saveUser(User user) throws IOException {
         Serializer serializer = new Serializer(SAMPLE);
 
         if (users.size() == 1) {
@@ -155,7 +155,7 @@ public class Kurt {
         serializer.write(user);
     }
 
-    private static void saveAllUsers() throws IOException {
+    public static void saveAllUsers() throws IOException {
         Serializer serializer = new Serializer(SAMPLE);
 
         serializer.initialize(users.size(), "VFF02");
@@ -163,7 +163,7 @@ public class Kurt {
             serializer.write(user);
     }
 
-    private static void saveAllPosts() throws IOException {
+    public static void saveAllPosts() throws IOException {
         Serializer serializer = new Serializer(KRAT);
 
         serializer.initialize(tagMap.size(), "KRAT");
@@ -212,7 +212,7 @@ public class Kurt {
         saveAllUsers(); // Save all after updates
     }
 
-    private static void search(Scanner input) {
+    public static void search(Scanner input) {
         System.out.println("\n=== Search by Tag ===");
         System.out.print("Enter tag to search: ");
         String tag = input.nextLine();
@@ -255,7 +255,7 @@ public class Kurt {
         System.out.println(currentUser.toString());
     }
 
-    private static String getSnippet(Post post) {
+    public static String getSnippet(Post post) {
         int strlen = post.getLength();
         byte[] bytes = new byte[strlen];
 

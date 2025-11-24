@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static kurt.access.NumberType.*;
 
-class Serializer implements Field.Visitor<byte[]> {
+public class Serializer implements Field.Visitor<byte[]> {
     private final static Validator VALIDATOR = new Validator();
     private final static byte CONT_MARKER = (byte)0xFF;
     private final static byte TERMINATE = (byte)0xE0;
