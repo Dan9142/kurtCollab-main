@@ -10,11 +10,11 @@ import java.util.*;
 public class Kurt {
     static final String DUMP = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/posts.dump";
     public static final String SAMPLE = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/sample.vff";
-    static final String KRAT = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/test.krat";
+    static final String KRAT = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/index.krat";
 
     public static Map<String, User> users = new HashMap<>();
     public static Map<String, List<Post>> tagMap = new HashMap<>();
-    private static Indexer indexer;
+    public static Indexer indexer;
     private static User currentUser = null;
 
     static boolean hadError = false;

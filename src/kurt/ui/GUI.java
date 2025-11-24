@@ -3,7 +3,6 @@ package kurt.ui;
 import kurt.access.*;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
@@ -13,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 
@@ -23,17 +21,18 @@ import static kurt.access.Kurt.*;
 public class GUI
 {
 
+    //public static Indexer indexer;
+    static int universalTagMax = 0;
     static boolean tagNeeded = false;
     static int profilePresses = 0;
+    static int ratePresses = 0;
     static int postPresses = 0;
-
-    public static Map<String, User> users = new HashMap<>();
-    private static Map<String, List<Post>> tagMap = new HashMap<>();
-    private static Indexer indexer;
+    //private static Map<String, List<Post>> tagMap = new HashMap<>();
+    //private static Indexer indexer;
     private static User currentUser = null;
     static final String DUMP = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/posts.dump";
     static final String SAMPLE = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/sample.vff";
-    static final String KRAT = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/test.krat";
+    static final String KRAT = "C:/Users/jacob/GitHub/kurtCollab-main/src/kurt/access/files/index.krat";
 
 
     //Initial Setup
@@ -54,7 +53,10 @@ public class GUI
     static JTextField loginTagSearchText = new JTextField(50);
     static TextPrompt loginTagSearchTextPrompt = new TextPrompt("Enter Tag", loginTagSearchText);
     static JTextArea loginTagDisplayArea = new JTextArea();
+    static TextPrompt loginTagDisplayAreaTextPrompt = new TextPrompt("View Posts Here", loginTagDisplayArea);
     static JLabel loginTagDisplayAuthor = new JLabel();
+    static JLabel loginTagDisplayLength = new JLabel();
+    static JLabel loginTagDisplayReputation = new JLabel();
     static JLabel loginTagDisplayNumberOfPosts = new JLabel();
     static JButton loginTagNextButton = new JButton("Next");
     static JButton loginTagPreviousButton = new JButton("Last");
@@ -97,13 +99,17 @@ public class GUI
     static JLabel profileUsername =  new JLabel();
     static JLabel profileDOB = new JLabel();
     static JLabel profileEmail = new JLabel();
+    static JLabel profilePosts = new JLabel();
+    static JLabel profileReputation = new JLabel();
 
     static JLabel mainTagSearch = new JLabel();
-    static JButton mainTSearchButton = new JButton("Search");
-    static JTextField loSearchText = new JTextField(50);
-    static TextPrompt mainTagSearchTextPrompt = new TextPrompt("Enter Tag", loginTagSearchText);
+    static JButton mainTagSearchButton = new JButton("Search");
+    static JTextField mainTagSearchText = new JTextField(50);
+    static TextPrompt mainTagSearchTextPrompt = new TextPrompt("Enter Tag", mainTagSearchText);
     static JTextArea mainTagDisplayArea = new JTextArea();
+    static TextPrompt mainTagDisplayAreaTextPrompt = new TextPrompt("View Posts Here", mainTagDisplayArea);
     static JLabel mainTagDisplayAuthor = new JLabel();
+    static JLabel mainTagDisplayLength = new JLabel();
     static JLabel mainTagDisplayNumberOfPosts = new JLabel();
     static JButton mainTagNextButton = new JButton("Next");
     static JButton mainTagPreviousButton = new JButton("Last");
@@ -111,13 +117,24 @@ public class GUI
     static JButton postButton = new JButton("Enter");
     static JTextArea mainPostDisplayArea = new JTextArea();
     static JLabel mainPostLabel  = new JLabel();
+    static JTextField mainTagPostField = new JTextField(50);
 
-    static JButton rateUserEnterButton = new JButton("Rate");
+
+    static JPanel rateUserPanel = new JPanel();
+    static JButton rateUserSwitchButton = new JButton("Rate");
+    static JButton rateUserEnterButton = new JButton("Enter");
     static JTextField rateUserText = new JTextField(50);
+    static TextPrompt rateUserTextPrompt = new TextPrompt("Enter Username", rateUserText);
     static JLabel rateUserLabel = new JLabel();
+    static JTextField rateUserNumberText = new JTextField(50);
+    static TextPrompt rateUserNumberTextPrompt = new TextPrompt("Enter Rating",  rateUserNumberText);
+
+    static JButton logoutButton = new JButton("Logout");
 
     //Main Menu Variables
     static boolean viewingProfile = false;
+    static boolean ratingCurrently = false;
+
 
 
 
@@ -128,15 +145,14 @@ public class GUI
         firstFrame.setSize(700, 350);
         loginPanel.setLayout(null);
         loginText.setBounds(0,0,200,50);
+        loginPanel.setBackground(Color.GRAY);
         loginEnterButton.setBounds(200, 0, 100, 100);
         loginLabel.setBounds(5, 50, 300, 50);
-        loginTextPrompt.setForeground( Color.BLACK );
+        loginTextPrompt.setForeground(Color.BLACK);
         loginTextPrompt.changeAlpha(0.4f);
         loginTextPrompt.changeStyle(Font.BOLD + Font.ITALIC);
         loginPanel.add(loginText);
-        loginEnterButton.setPreferredSize(new Dimension(200, 100));
         loginPanel.add(loginEnterButton);
-        loginPanel.setBackground(Color.GRAY);
         loginPanel.add(loginLabel);
         loginPageRegisterLabel.setBounds(5, 150, 300, 50);
         loginPageRegisterLabel.setText("Don't have an account? Click to register!");
@@ -147,17 +163,18 @@ public class GUI
         loginTagSearch.setText("Search for posts by tag here!");
         loginPanel.add(loginTagSearch);
         loginTagSearchText.setBounds(500,0,200,50);
-        loginPanel.add(loginTagSearchText);
-        loginTagSearchTextPrompt.setForeground( Color.BLACK );
+        loginTagSearchTextPrompt.setForeground(Color.BLACK);
         loginTagSearchTextPrompt.changeAlpha(0.4f);
         loginTagSearchTextPrompt.changeStyle(Font.BOLD + Font.ITALIC);
+        loginPanel.add(loginTagSearchText);
         loginTagSearchButton.setBounds(400,0,100,100);
         loginPanel.add(loginTagSearchButton);
         loginTagDisplayArea.setBounds(400,150,250,100);
-        loginTagDisplayArea.setText("Hi");
+        loginTagDisplayArea.setText("");
         loginTagDisplayArea.setLineWrap(true);
         loginTagDisplayArea.setWrapStyleWord(true);
         loginTagDisplayArea.setEditable(false);
+
         loginPanel.add(loginTagDisplayArea);
         loginTagDisplayAuthor.setBounds(400,110,200,50);
         loginTagNextButton.setBounds(340,145,60,60);
@@ -165,8 +182,15 @@ public class GUI
         loginTagPreviousButton.setBounds(340,205,60,60);
         loginPanel.add(loginTagPreviousButton);
         loginPanel.add(loginTagDisplayAuthor);
-        loginTagPreviousButton.setVisible(false);
-        loginTagNextButton.setVisible(false);
+        loginTagDisplayLength.setBounds(500,110,200,50);
+        loginTagDisplayNumberOfPosts.setBounds(320,265,200,50);
+        loginTagDisplayAreaTextPrompt.setForeground(Color.BLACK);
+        loginTagDisplayAreaTextPrompt.changeAlpha(0.4f);
+        loginTagDisplayAreaTextPrompt.changeStyle(Font.BOLD + Font.ITALIC);
+        loginPanel.add(loginTagDisplayLength);
+        loginPanel.add(loginTagDisplayNumberOfPosts);
+        loginTagPreviousButton.setVisible(true);
+        loginTagNextButton.setVisible(true);
         firstFrame.add(loginPanel);
         firstFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         firstFrame.setVisible(true);
@@ -228,6 +252,8 @@ public class GUI
                     {
                         loginLabel.setText("Hello, " + getUsername() + ". Enter Your Password.");
                         loginTextPrompt.setText("Enter Password");
+                        User user = users.get(usernameStorage);
+                        currentUser = user;
                         usernameRight = true;
                         loginText.setText("");
                         loginPresses++;
@@ -244,16 +270,21 @@ public class GUI
                     {
                         if (checkingPassword() == true)
                         {
-                            User user = users.get(usernameStorage);
-                            loginLabel.setText("Welcome to Kurt Collab!");
-                            loginEnterButton.setVisible(false);
-                            loginText.setVisible(false);
-                            loginLabel.setBounds(100, 100, 200, 200);
+                            loginLabel.setText("");
+                            //loginEnterButton.setVisible(false);
+                            //loginText.setVisible(false);
+                            //loginLabel.setBounds(100, 100, 200, 200);
                             //loginPanel.setVisible(false);
                             //firstFrame.setVisible(false);
                             loginPanel.setVisible(false);
                             tagCounter = 1;
-                            currentUser = user;
+                            loginTagPreviousButton.removeActionListener(this);
+                            loginTagNextButton.removeActionListener(this);
+                            System.out.println(currentUser.getPosts());
+                            System.out.println(currentUser.getEmail());
+                            System.out.println(currentUser.getDob());
+                            loginTextPrompt.setText("Enter Username");
+                            loginPresses = 0;
                             mainMenuSetup();
                         }
                         else if (checkingPassword() == false)
@@ -315,7 +346,6 @@ public class GUI
         registerPanel.add(registerLabel);
         firstFrame.add(registerPanel);
         firstFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        registerActionListener();
     }
 
     public static void registerActionListener() throws IOException
@@ -338,7 +368,7 @@ public class GUI
                 {
                     password = registerText.getText();
                     registerLabel.setText("Now Enter a DOB");
-                    registerTextPrompt.setText("Enter a DOB (MM-DD-YYYY)");
+                    registerTextPrompt.setText("Enter a DOB (MM/DD/YYYY)");
                     registerText.setText("");
                     passwordEntered = true;
                 }
@@ -372,7 +402,7 @@ public class GUI
                         System.out.println("Registration failed: Username and password are required!");
                         return;
                     }
-                    Kurt.users.put(username, newUser);
+                    users.put(username, newUser);
 
                     try {
                         saveAllUsers();
@@ -384,16 +414,23 @@ public class GUI
                     registerPanel.setVisible(false);
                     loginPanel.setVisible(true);
                     loginLabel.setText("Registration Successful!");
+                    registerLabel.setText("");
+                    registerButtonPresses = 0;
+                    emailEntered = false;
+                    usernameEntered = false;
+                    passwordEntered = false;
+                    DOBEntered = false;
+                    emailEntered = false;
                 }
             }
         });
     }
 
-    public static void tagSearching()
+    public static void loginTagSearching()
     {
         String tag = loginTagSearchText.getText();
 
-        List<Post> posts = tagMap.get(tag);
+        List<Post> posts = Kurt.tagMap.get(tag);
         if (posts == null || posts.isEmpty()) {
             System.out.println("No posts found for tag: " + tag);
             return;
@@ -401,15 +438,32 @@ public class GUI
 
         System.out.println("\nFound " + posts.size() + " post(s) for tag '" + tag + "':");
         Post post = posts.get(tagCounter-1);
+        universalTagMax = posts.size();
         String snippet = getSnippet(post);
-            //System.out.println((i + 1) + ". " + post);
-            //System.out.println("   Preview: " + (snippet.length() > 50 ?
-            //        snippet.substring(0, 50) + "..." : snippet));
-            //System.out.println();
         loginTagDisplayArea.setText(snippet);
         loginTagDisplayAuthor.setText("" + post);
-        loginTagPreviousButton.setVisible(true);
-        loginTagNextButton.setVisible(true);
+        loginTagDisplayLength.setText("Length: " + snippet.length() + " characters");
+        loginTagDisplayNumberOfPosts.setText("Post Number: " + tagCounter + "/" + posts.size());
+    }
+    public static void mainTagSearching()
+    {
+        String tag = mainTagSearchText.getText();
+
+        List<Post> posts = Kurt.tagMap.get(tag);
+        if (posts == null || posts.isEmpty()) {
+            System.out.println("No posts found for tag: " + tag);
+            return;
+        }
+
+        System.out.println("\nFound " + posts.size() + " post(s) for tag '" + tag + "':");
+        Post post = posts.get(tagCounter-1);
+        universalTagMax = posts.size();
+        String snippet = getSnippet(post);
+        mainTagDisplayArea.setText(snippet);
+        mainTagDisplayAuthor.setText("" + post);
+        mainTagDisplayLength.setText("Length: " + snippet.length() + " characters");
+        mainTagDisplayNumberOfPosts.setText("Post Number: " + tagCounter + "/" + posts.size());
+
     }
     public static void mainMenuSetup()
     {
@@ -418,20 +472,86 @@ public class GUI
         firstFrame.add(mainMenuPanel);
         viewProfile.setBounds(0,0,100,50);
         mainMenuPanel.add(viewProfile);
-        postButton.setBounds(100, 100, 100, 50);
+        postButton.setBounds(0, 100, 100, 50);
         mainMenuPanel.add(postButton);
-        mainPostDisplayArea.setBounds(200, 100, 150, 150);
+        mainPostDisplayArea.setBounds(100, 100, 150, 150);
         mainMenuPanel.add(mainPostDisplayArea);
-        mainPostLabel.setBounds(200, 50, 150, 50);
-        mainPostLabel.setText("Make a post here!");
+        mainPostLabel.setBounds(100, 50, 300, 50);
+        mainPostLabel.setText("Make a post here! Enter tag on the right!");
         mainMenuPanel.add(mainPostLabel);
+        mainPostDisplayArea.setLineWrap(true);
+        mainPostDisplayArea.setWrapStyleWord(true);
+        mainTagPostField.setBounds(251, 100, 150, 50);
+        mainMenuPanel.add(mainTagPostField);
+        logoutButton.setBounds(0, 265, 100, 50);
+        mainMenuPanel.add(logoutButton);
+        mainMenuPanel.setVisible(true);
+
+
+        //Tag Stuff
+        mainTagSearch.setBounds(505,50,300,50);
+        mainTagSearch.setText("Search for posts by tag here!");
+        mainMenuPanel.add(mainTagSearch);
+        mainTagSearchText.setBounds(500,0,200,50);
+        mainTagSearchTextPrompt.setForeground(Color.BLACK);
+        mainTagSearchTextPrompt.changeAlpha(0.4f);
+        mainTagSearchTextPrompt.changeStyle(Font.BOLD + Font.ITALIC);
+        mainMenuPanel.add(mainTagSearchText);
+        mainTagSearchButton.setBounds(400,0,100,100);
+        mainMenuPanel.add(mainTagSearchButton);
+        mainTagDisplayArea.setBounds(450,180,250,100);
+        mainTagDisplayArea.setText("");
+        mainTagDisplayArea.setLineWrap(true);
+        mainTagDisplayArea.setWrapStyleWord(true);
+        mainTagDisplayArea.setEditable(false);
+
+        mainMenuPanel.add(mainTagDisplayArea);
+        mainTagDisplayAuthor.setBounds(420,140,200,50);
+        mainTagNextButton.setBounds(390,175,60,60);
+        mainMenuPanel.add(mainTagNextButton);
+        mainTagPreviousButton.setBounds(390,235,60,60);
+        mainMenuPanel.add(mainTagPreviousButton);
+        mainMenuPanel.add(mainTagDisplayAuthor);
+        mainTagDisplayLength.setBounds(520,140,200,50);
+        mainTagDisplayNumberOfPosts.setBounds(460,265,200,50);
+        mainTagDisplayAreaTextPrompt.setForeground(Color.BLACK);
+        mainTagDisplayAreaTextPrompt.changeAlpha(0.4f);
+        mainTagDisplayAreaTextPrompt.changeStyle(Font.BOLD + Font.ITALIC);
+        mainMenuPanel.add(mainTagDisplayLength);
+        mainMenuPanel.add(mainTagDisplayNumberOfPosts);
+        mainTagPreviousButton.setVisible(true);
+        mainTagNextButton.setVisible(true);
+
+        //Rating Users
+        rateUserSwitchButton.setBounds(275, 265, 100, 50);
+        mainMenuPanel.add(rateUserSwitchButton);
     }
 
     public static void profileSetup()
     {
         profilePanel.setLayout(null);
         profilePanel.setBackground(Color.GRAY);
+    }
 
+    public static void rateUserSetup()
+    {
+        rateUserPanel.setLayout(null);
+        rateUserPanel.setBackground(Color.GRAY);
+        rateUserEnterButton.setBounds(0, 125, 100, 50);
+        rateUserPanel.add(rateUserEnterButton);
+        rateUserText.setBounds(100,125,150,50);
+        rateUserPanel.add(rateUserText);
+        rateUserTextPrompt.setForeground(Color.BLACK);
+        rateUserTextPrompt.changeAlpha(0.4f);
+        rateUserTextPrompt.changeStyle(Font.BOLD + Font.ITALIC);
+        rateUserLabel.setBounds(50,180,300,50);
+        rateUserLabel.setText("Enter a Username! Rating on the right!");
+        rateUserPanel.add(rateUserLabel);
+        rateUserNumberText.setBounds(255, 125, 150, 50);
+        rateUserPanel.add(rateUserNumberText);
+        rateUserNumberTextPrompt.setForeground(Color.BLACK);
+        rateUserNumberTextPrompt.changeAlpha(0.4f);
+        rateUserNumberTextPrompt.changeStyle(Font.BOLD + Font.ITALIC);
     }
 
     public static void tagSearchButtonActionListener()
@@ -441,7 +561,10 @@ public class GUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                tagSearching();
+                tagSearchNextButtonActionListener();
+                tagSearchLastButtonActionListener();
+                tagCounter = 1;
+                loginTagSearching();
             }
         });
     }
@@ -452,8 +575,11 @@ public class GUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                tagCounter++;
-                tagSearching();
+                if (tagCounter-1 != universalTagMax-1)
+                {
+                    tagCounter++;
+                }
+                loginTagSearching();
             }
         });
     }
@@ -462,47 +588,179 @@ public class GUI
         loginTagPreviousButton.addActionListener(new ActionListener()
         {
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                tagCounter--;
-                tagSearching();
+            public void actionPerformed(ActionEvent e) {
+                if (tagCounter != 1)
+                {
+                    tagCounter--;
+                }
+                loginTagSearching();
             }
         });
     }
-    public static void postingButtonActionListener()
+
+    public static void mainTagSearchButtonActionListener()
     {
-        User user = users.get(usernameStorage);
-        postButton.addActionListener(new ActionListener()
+        mainTagSearchButton.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                postPresses++;
-                if (tagNeeded == false && postPresses %2 == 1)
+                mainTagSearchNextButtonActionListener();
+                mainTagSearchLastButtonActionListener();
+                tagCounter = 1;
+                mainTagSearching();
+            }
+        });
+    }
+    public static void mainTagSearchNextButtonActionListener()
+    {
+        mainTagNextButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (tagCounter-1 != universalTagMax-1)
                 {
-                    Creator creator = new Creator(currentUser);
-                    String content = mainPostDisplayArea.getText();
-                    long offset = 0;
-                    try
-                    {
-                        offset = Indexer.dumpPost(content);
-                    }
-                    catch (IOException ex)
-                    {
-                        throw new RuntimeException(ex);
-                    }
-                    Post post = new Post(currentUser.getUsername(), offset, content.length());
-                    creator.add(new Field.Posts(currentUser.getPosts() + 1));
-                    try {
-                        saveAllPosts();
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    mainPostDisplayArea.setText("");
-                    postButton.setText("Tag");
+                    tagCounter++;
+                }
+                mainTagSearching();
+            }
+        });
+    }
+    public static void mainTagSearchLastButtonActionListener()
+    {
+        mainTagPreviousButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (tagCounter != 1)
+                {
+                    tagCounter--;
+                }
+                mainTagSearching();
+            }
+        });
+    }
+
+    public static void logoutButtonActionListener()
+    {
+        logoutButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                currentUser = null;
+                mainMenuPanel.setVisible(false);
+                loginPanel.setVisible(true);
+                usernameRight = false;
+                tagCounter = 1;
+            }
+        });
+
+    }
+    public static void postingButtonActionListener()
+    {
+        postButton.addActionListener(new ActionListener()
+        {
+            String content = "";
+            String tag = "";
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Creator creator = new Creator(currentUser);
+                postPresses++;
+                content = mainPostDisplayArea.getText();
+                System.out.println(content);
+                long offset;
+                try
+                {
+                    offset = Indexer.dumpPost(content);
+                }
+                catch (IOException ex)
+                {
+                    throw new RuntimeException(ex);
+                }
+                Post post = new Post(currentUser.getUsername(), offset, content.length());
+                creator.add(new Field.Posts(currentUser.getPosts() + 1));
+                System.out.println(currentUser.getPosts());
+                tag = mainTagPostField.getText();
+                System.out.println(tag);
+                mainPostDisplayArea.setText("");
+                mainTagPostField.setText("");
+                Kurt.indexer.post(post, tag, Kurt.tagMap);
+                try
+                {
+                    saveAllPosts();
+                    saveAllUsers();
+                }
+                catch (IOException ex)
+                {
+                    throw new RuntimeException(ex);
                 }
             }
         });
+    }
+
+    public static void rateSwitchButtonActionListener()
+    {
+        rateUserSetup();
+        rateUserSwitchButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                ratePresses++;
+                if (!ratingCurrently && ratePresses % 2 != 0)
+                {
+                    firstFrame.add(rateUserPanel);
+                    rateUserPanel.setVisible(true);
+                    mainMenuPanel.setVisible(false);
+                    rateUserPanel.add(rateUserSwitchButton);
+                    rateUserPanel.setBackground(Color.GRAY);
+                    rateUserSwitchButton.setText("Back");
+                    ratingCurrently = true;
+                }
+                if (ratingCurrently && ratePresses % 2 == 0)
+                {
+                    rateUserPanel.setVisible(false);
+                    mainMenuPanel.setVisible(true);
+                    mainMenuSetup();
+                    rateUserSwitchButton.setText("Rate");
+                    rateUserText.setText("");
+                    rateUserNumberText.setText("");
+                    rateUserLabel.setText("Enter a Username! Rating on the right!");
+                    ratingCurrently = false;
+
+                }
+            }
+        });
+    }
+    public static void rateEnterButtonActionListener()
+    {
+        rateUserEnterButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                String targetUser = rateUserText.getText();
+                int rating = Integer.parseInt(rateUserNumberText.getText());
+                User user = users.get(targetUser);
+                if (user == null)
+                {
+                    rateUserLabel.setText("Username does not exist!");
+                    return;
+                }
+                float newRating = rating;
+                float currentRating = user.getReputation();
+                float averageRating = (newRating + currentRating) / 2;
+                Creator creator = new Creator(user);
+                creator.add(new Field.Reputation(averageRating));
+                rateUserLabel.setText("Success! " + targetUser + " now has a rating of " + averageRating);
+                rateUserText.setText("");
+                rateUserNumberText.setText("");
+
+            }
+        });
+
     }
 
     public static void profileButtonActionListener()
@@ -518,17 +776,22 @@ public class GUI
                 if (!viewingProfile && profilePresses % 2 != 0)
                 {
                     profilePanel.setVisible(true);
-                    User user = users.get(usernameStorage);
                     mainMenuPanel.setVisible(false);
                     profileUsername.setBounds(0,0,100,50);
-                    profileDOB.setBounds(0,50,100,50);
-                    profileUsername.setText("Username: " + user.getUsername());
-                    profileDOB.setText("DOB: " + user.getDob());
-                    profileEmail.setBounds(0,100,100,50);
-                    profileEmail.setText("Email: " + user.getEmail());
+                    profileDOB.setBounds(0,50,200,50);
+                    profileUsername.setText("Username: " + currentUser.getUsername());
+                    profileDOB.setText("DOB: " + currentUser.getDob());
+                    profileEmail.setBounds(0,100,200,50);
+                    profileEmail.setText("Email: " + currentUser.getEmail());
+                    profilePosts.setBounds(0, 150, 100, 50);
+                    profilePosts.setText("Posts: " + currentUser.getPosts());
+                    profileReputation.setBounds(0, 200, 100, 50);
+                    profileReputation.setText("Reputation: " + currentUser.getReputation());
                     profilePanel.add(profileUsername);
                     profilePanel.add(profileDOB);
                     profilePanel.add(profileEmail);
+                    profilePanel.add(profilePosts);
+                    profilePanel.add(profileReputation);
                     firstFrame.add(profilePanel);
                     viewProfile.setText("Back");
                     viewProfile.setBounds(200,0,100,50);
@@ -554,16 +817,21 @@ public class GUI
     public static void main(String[] args) throws IOException
     {
         Parser parser = new Parser(readFile(SAMPLE), new HashMap<>());
-        indexer = new Indexer(readFile(KRAT), new HashMap<>());
+        Kurt.indexer = new Indexer(readFile(KRAT), new HashMap<>());
         users = parser.map();
-        tagMap = indexer.index();
+        Kurt.tagMap = Kurt.indexer.index();
         loginSetup();
         loginActionListener();
         registerSwitchActionListener();
+        registerActionListener();
         tagSearchButtonActionListener();
-        tagSearchNextButtonActionListener();
-        tagSearchLastButtonActionListener();
+        mainTagSearchButtonActionListener();
         profileButtonActionListener();
+        System.out.println("Username: " + usernameStorage);
+        postingButtonActionListener();
+        logoutButtonActionListener();
+        rateSwitchButtonActionListener();
+        rateEnterButtonActionListener();
     }
 
     public static byte[] readFile(String path) throws IOException
